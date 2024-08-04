@@ -1,21 +1,29 @@
 import { useForm } from 'react-hook-form'
-import { FC } from 'react'
-import { CreateEventSchema, CreateEventValues } from '@/shared/api'
+import { FC, useEffect } from 'react';
+import { CreateEventSchema, CreateEventValues } from '@/shared/api';
 import { zodResolver } from '@hookform/resolvers/zod'
 
 
 interface CreateEventFormProps {
-  onSubmit: (data: CreateEventValues) => void
+  onSubmit: (data: any) => void
+  defaultValues?: CreateEventValues
 }
 
-export const CreateEventForm: FC<CreateEventFormProps> = ({ onSubmit }) => {
+export const EventForm: FC<CreateEventFormProps> = ({ onSubmit, defaultValues }) => {
   const {
     register,
     handleSubmit,
-    formState: { errors }
+    formState: { errors },
+    setValue,
   } = useForm<CreateEventValues>({
-    resolver: zodResolver(CreateEventSchema)
+    resolver: zodResolver(CreateEventSchema),
   })
+  
+  useEffect(() => {
+    setValue('title', defaultValues?.title ?? '')
+    setValue('description', defaultValues?.description ?? '')
+    setValue('date', defaultValues?.date ?? new Date())
+  }, [defaultValues])
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -24,9 +32,11 @@ export const CreateEventForm: FC<CreateEventFormProps> = ({ onSubmit }) => {
           <h2 className="text-base font-semibold leading-7 text-gray-900">
             Событие
           </h2>
-          <p className="mt-1 text-sm leading-6 text-gray-600">
-            Заполните форму для создания события
-          </p>
+          {!defaultValues && (
+            <p className="mt-1 text-sm leading-6 text-gray-600">
+              Заполните форму для создания события
+            </p>
+          )}
 
           <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
             <div className="sm:col-span-4">
@@ -104,7 +114,7 @@ export const CreateEventForm: FC<CreateEventFormProps> = ({ onSubmit }) => {
           type="submit"
           className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
         >
-          Создать
+          {defaultValues ? 'Обновить' : 'Создать'}
         </button>
       </div>
     </form>

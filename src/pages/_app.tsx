@@ -1,12 +1,23 @@
-import '@/styles/globals.css'
 import type { AppProps } from 'next/app'
 import { trpc } from '@/shared/api'
 import { getSession, SessionProvider } from 'next-auth/react'
+import '@/styles/globals.css'
+import { MainLayout } from '@/app/layouts/mainLayout';
+import { ReactNode } from 'react';
 
-function App({ Component, pageProps }: AppProps) {
+type Props = AppProps & {
+  Component: { getLayout?: (page: ReactNode) => ReactNode }
+}
+
+function App({ Component, pageProps }: Props) {
+  const getLayout = Component.getLayout ?? ((page: ReactNode) => (
+    <MainLayout>{page}</MainLayout>
+  ));
+
+
   return <div className='mx-auto max-w-4xl'>
     <SessionProvider session={pageProps.session}>
-      <Component {...pageProps} />
+      {getLayout(<Component {...pageProps} />)}
     </SessionProvider>
   </div>
 }
