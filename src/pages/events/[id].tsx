@@ -1,4 +1,4 @@
-import { EventDetail } from '@/entities/event/ui/detail'
+import { EventDetail } from '@/entities/event'
 import { trpc } from '@/shared/api'
 import { useRouter } from 'next/router'
 import { useSession } from 'next-auth/react'
